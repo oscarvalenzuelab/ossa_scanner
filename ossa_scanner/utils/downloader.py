@@ -35,6 +35,7 @@ def download_source(package_manager, package_name, output_dir):
             project_url, source_url = (None, None)
             if spec_file:
                 project_url, source_url = extract_rpm_urls_from_spec(spec_file)
+                print("extract_rpm_urls_from_spec:",project_url,source_url)
                 try:
                     with open(spec_file, "r") as spec:
                         for line in spec:
@@ -43,7 +44,7 @@ def download_source(package_manager, package_name, output_dir):
                 except FileNotFoundError:
                     print(f"Spec file not found: {spec_file}")
                 cleanup_extracted_files(spec_dir)
-            tarballs = extract_tarballs(source_path)
+            tarballs = extract_rpm_tarballs(source_path)
             exit()
             
         elif package_manager == 'brew':
@@ -103,7 +104,7 @@ def extract_rpm_spec_file(srpm_path, dest_dir="./extracted_specs"):
         print(f"Failed to extract spec file from {srpm_path}: {e}")
     return None
 
-def extract_tarballs(srpm_path, dest_dir="./extracted_sources"):
+def extract_rpm_tarballs(srpm_path, dest_dir="./extracted_sources"):
     os.makedirs(dest_dir, exist_ok=True)
     try:
         command = f"rpm2cpio {srpm_path} | cpio -idmv -D {dest_dir}"
@@ -120,7 +121,6 @@ def extract_rpm_urls_from_spec(spec_file_path):
     try:
         with open(spec_file_path, "r") as spec_file:
             for line in spec_file:
-                # print('line<>spec:', line)
                 if line.startswith("URL:"):
                     project_url = line.split(":", 1)[1].strip()
                 elif line.startswith("Source0:"):
