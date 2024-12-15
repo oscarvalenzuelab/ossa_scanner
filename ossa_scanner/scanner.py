@@ -22,6 +22,7 @@ class Scanner:
             print(f"Processing package: {package}")
             package_info = get_package_info(self.os_type, package)
             print(f"Fetched metadata for {package}")
+            print(f"{package_info}")
 
             source_file = download_source(self.os_type, package, self.temp_dir)
             print(f"Downloaded source file: {source_file}")
