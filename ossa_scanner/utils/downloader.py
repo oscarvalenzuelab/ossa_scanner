@@ -120,7 +120,7 @@ def extract_rpm_urls_from_spec(spec_file_path):
     try:
         with open(spec_file_path, "r") as spec_file:
             for line in spec_file:
-                print('line<>spec:', line)
+                # print('line<>spec:', line)
                 if line.startswith("URL:"):
                     project_url = line.split(":", 1)[1].strip()
                 elif line.startswith("Source0:"):
