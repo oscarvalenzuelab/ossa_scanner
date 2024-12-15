@@ -30,11 +30,8 @@ setup(
     packages=find_packages(),
     install_requires=[
         "click",
-        "jsonschema",
-        "requests",
-        "PyYAML",
-        "tqdm",
         "swh.model",
+        "distro",
     ],
     entry_points={
         "console_scripts": [

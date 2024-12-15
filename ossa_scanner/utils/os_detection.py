@@ -1,10 +1,13 @@
-import platform
+import distro
 
 def detect_os():
-    dist, _, _ = platform.linux_distribution(full_distribution_name=False)
-    if 'Ubuntu' in dist or 'Debian' in dist:
+    dist = distro.id()
+    if 'ubuntu' in dist or 'debian' in dist:
         return 'apt'
-    elif 'Red Hat' in dist or 'CentOS' in dist or 'AlmaLinux' in dist:
+    elif 'redhat' in dist or 'centos' in dist or 'almalinux' in dist:
         return 'yum'
+    elif 'darwin' in dist:
+        return 'brew'
     else:
         raise ValueError("Unsupported OS")
+

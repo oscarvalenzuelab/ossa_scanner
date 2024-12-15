@@ -10,13 +10,6 @@ from .uploader import GitHubUploader
 
 class Scanner:
     def __init__(self, output_dir, threads=4):
-        """
-        Initialize the scanner with the output directory and thread count.
-
-        Args:
-            output_dir (str): Directory to store downloaded files and extracted sources.
-            threads (int): Number of threads for parallel processing.
-        """
         self.output_dir = output_dir
         self.os_type = detect_os()
         self.threads = threads
@@ -76,7 +69,6 @@ class Scanner:
         print(f"Detected OS: {self.os_type}")
         print("Listing available packages...")
         packages = list_packages(self.os_type)
-
         results = []
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             # Submit tasks for parallel processing
