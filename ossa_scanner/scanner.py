@@ -68,13 +68,6 @@ class Scanner:
         report_filename = f"ossa-{date_str}-{hash(package) % 10000}-{package}.json"
         report_path = os.path.join(self.output_dir, report_filename)
 
-        # This need to be moved to a different class
-        artifact_name = source_file
-        if "tmp/" in source_file:
-            artifact_name = os.path.basename(source_file)
-        if "--" in artifact_name:
-            artifact_name = artifact_name.split("--")[-1]
-
         if package_info.get("version") != "*":
             affected_versions = ["*.*", package_info.get("version")]
         else:
@@ -92,6 +85,13 @@ class Scanner:
             # Calculate SWHID
             swhid = calculate_swhid(source_dir)
             print(f"SWHID for {package}: {swhid}")
+            
+            # This need to be moved to a different class
+            artifact_name = source_file
+            if "tmp/" in source_file:
+                artifact_name = os.path.basename(source_file)
+            if "--" in artifact_name:
+                artifact_name = artifact_name.split("--")[-1]
 
         # Create the report content
         report = {
