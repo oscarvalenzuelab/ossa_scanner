@@ -25,7 +25,7 @@ def list_packages(package_manager):
 
     packages = result.stdout.splitlines()
     extracted_packages = []
-    max_packages = 5
+    max_packages = 2
     k_packages = 0
     for line in packages:
         if not line.strip() or line.startswith("==>"):
@@ -51,8 +51,6 @@ def get_package_info(package_manager, package_name):
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
         output = result.stdout
-
-        # Parse the output based on the package manager
         if package_manager == 'brew':
             return parse_brew_info(output)
         elif package_manager in ['yum', 'dnf']:
@@ -79,10 +77,9 @@ def parse_brew_info(output):
             info["references"] = line.strip()
         elif line.startswith("License:"):  # The license information
             info["licenses"] = line.split(":", 1)[1].strip()
+    info["severity"] = license_classificaton(info["licenses"])
 
     return info
-
-
 
 def parse_yum_info(output):
     """Parses yum repoquery --info output."""
@@ -96,12 +93,14 @@ def parse_yum_info(output):
             info["references"] = line.split(":", 1)[1].strip()
         elif "Copyright" in line:
             info["references"] = line.strip()
+        severity = license_classificaton(info["licenses"])
 
     # Ensure all keys are present even if data is missing
     return {
         "licenses": info.get("licenses", "NOASSERTION"),
         "copyright": info.get("copyright", "NOASSERTION"),
         "references": info.get("references", "NOASSERTION"),
+        "severity": severity,
     }
 
 
@@ -117,11 +116,20 @@ def parse_apt_info(output):
             info["website"] = line.split(":", 1)[1].strip()
         elif "Copyright" in line:
             info["references"] = line.strip()
+        severity = license_classificaton(info["licenses"])
 
     # Ensure all keys are present even if data is missing
     return {
         "licenses": info.get("licenses", "NOASSERTION"),
         "copyright": info.get("copyright", "NOASSERTION"),
         "references": info.get("references", "NOASSERTION"),
+        "severity": severity,
     }
 
+def license_classificaton(licenses):
+    copyleft_licenses = ['GPL', 'CDDL', 'MPL']
+    severity = "Informational"
+    for cl_license in copyleft_licenses:
+        if cl_license.lower() in licenses:
+            severity = "Medium"
+    return severity

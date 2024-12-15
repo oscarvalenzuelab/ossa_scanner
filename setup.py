@@ -32,6 +32,7 @@ setup(
         "click",
         "swh.model",
         "distro",
+        "ssdeep",
     ],
     entry_points={
         "console_scripts": [
