@@ -75,7 +75,6 @@ def parse_brew_info(output):
     lines = output.splitlines()
 
     for i, line in enumerate(lines):
-        print('brew_info:', line)
         if line.startswith("==>") and ":" in line:
             new_line = line.lstrip("==>").strip()
             match1 = re.match(r"([^:]+):.*?([\d\.a-zA-Z]+)\s*\(", new_line)
