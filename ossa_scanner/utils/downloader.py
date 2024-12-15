@@ -33,7 +33,7 @@ def download_source(package_manager, package_name, output_dir):
             project_url, source_url = (None, None)
             if spec_file:
                 project_url, source_url, license = extract_rpm_info_from_spec(spec_file)
-                print("extract_rpm_urls_from_spec:",project_url,source_url, license)
+                # print("extract_rpm_urls_from_spec:",project_url,source_url, license)
                 cleanup_extracted_files(spec_file)
             tarballs = extract_rpm_tarballs(source_path)
             return tarballs
@@ -86,7 +86,7 @@ def extract_rpm_spec_file(srpm_path, dest_dir="./extracted_specs"):
     os.makedirs(dest_dir, exist_ok=True)
     try:
         command = f"rpm2cpio {srpm_path} | cpio -idmv -D {dest_dir}"
-        subprocess.run(command, shell=True, check=True)
+        subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         spec_files = [os.path.join(dest_dir, f) for f in os.listdir(dest_dir) if f.endswith(".spec")]
         if spec_files:
             return spec_files[0]
