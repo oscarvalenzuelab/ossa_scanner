@@ -85,8 +85,8 @@ def parse_yum_info(output):
     """Parses yum repoquery --info output."""
     info = {}
     lines = output.splitlines()
-    print('yum_info:', lines)
     for line in lines:
+        print('yum_info:', line)
         if line.startswith("License"):
             info["licenses"] = line.split(":", 1)[1].strip()
         elif line.startswith("URL"):
