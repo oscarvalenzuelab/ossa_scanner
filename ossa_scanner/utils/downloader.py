@@ -9,6 +9,25 @@ def download_source(package_manager, package_name, output_dir):
             cmd = ['apt-get', 'source', package_name, '-d', output_dir]
             subprocess.run(cmd, check=True)
         elif package_manager in ['yum', 'dnf']:
+            os.makedirs(output_dir, exist_ok=True)
+            command = ["yumdownloader", "--source", "--destdir", dest_dir, package_name]
+            result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            if result.returncode == 0:
+                for file in os.listdir(output_dir):
+                    if file.endswith(".src.rpm"):
+                        srpm_path = os.path.join(output_dir, file)
+            else:
+                exit()
+            try:
+                command = f"rpm2cpio {srpm_path} | cpio -idmv -D {output_dir}"
+                subprocess.run(command, shell=True, check=True)
+                spec_files = [os.path.join(output_dir, f) for f in os.listdir(output_dir) if f.endswith(".spec")]
+                if spec_files:
+                    print("spec:", spec_files[0])
+                    spec_file = spec_files[0]
+            except subprocess.CalledProcessError as e:
+                print(f"Failed to extract spec file from {srpm_path}: {e}")
+            exit()
             cmd = ['dnf', 'download', '--source', package_name, '--downloaddir', output_dir]
             print('cmd:', cmd)
             subprocess.run(cmd, check=True)
