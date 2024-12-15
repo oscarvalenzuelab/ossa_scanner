@@ -3,6 +3,19 @@ import os
 import shutil
 import glob
 
+def cleanup_extracted_files(folder_path):
+    """Recursively clean up files and directories in the specified folder."""
+    try:
+        for file_path in glob.glob(f"{folder_path}/*"):
+            if os.path.isdir(file_path):
+                shutil.rmtree(file_path)  # Recursively delete directories
+                print(f"Deleted directory: {file_path}")
+            else:
+                os.remove(file_path)  # Delete files
+                print(f"Deleted file: {file_path}")
+    except Exception as e:
+        print(f"Failed to clean up {folder_path}: {e}")
+
 def download_source(package_manager, package_name, output_dir):
     try:
         if package_manager == 'apt':
@@ -10,26 +23,24 @@ def download_source(package_manager, package_name, output_dir):
             subprocess.run(cmd, check=True)
         elif package_manager in ['yum', 'dnf']:
             os.makedirs(output_dir, exist_ok=True)
-            command = ["yumdownloader", "--source", "--destdir", output_dir, package_name]
-            result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            if result.returncode == 0:
-                for file in os.listdir(output_dir):
-                    if file.endswith(".src.rpm"):
-                        srpm_path = os.path.join(output_dir, file)
-            else:
-                exit()
-            try:
-                command = f"rpm2cpio {srpm_path} | cpio -idmv -D {output_dir}"
-                subprocess.run(command, shell=True, check=True)
-                spec_files = [os.path.join(output_dir, f) for f in os.listdir(output_dir) if f.endswith(".spec")]
-                if spec_files:
-                    print("spec:", spec_files[0])
-                    spec_file = spec_files[0]
-            except subprocess.CalledProcessError as e:
-                print(f"Failed to extract spec file from {srpm_path}: {e}")
+            source_path = get_rpm_source_package(package_name, output_dir)
+            if not source_path:
+                print(f"Source package for {package_name} not found in {package_name}.")
+                return
+            spec_file = extract_spec_file(source_path, output_dir)
+            project_url, source_url = (None, None)
+            if spec_file:
+                project_url, source_url = extract_urls_from_spec(spec_file)
+                try:
+                    with open(spec_file, "r") as spec:
+                        for line in spec:
+                            if line.startswith("License:"):
+                                licenses.append(line.split(":", 1)[1].strip())
+                except FileNotFoundError:
+                    print(f"Spec file not found: {spec_file}")
+                cleanup_extracted_files(spec_dir)
+            tarballs = extract_tarballs(source_path)
             exit()
-            
-            
         elif package_manager == 'brew':
             # Fetch the source tarball
             cmd = ['brew', 'fetch', '--build-from-source', package_name]
@@ -64,3 +75,69 @@ def download_source(package_manager, package_name, output_dir):
     except Exception as e:
         print(f"Error: {e}")
         return None
+
+def get_rpm_source_package(package_name, dest_dir="./source_packages"):
+    os.makedirs(dest_dir, exist_ok=True)
+    command = ["yumdownloader", "--source", "--destdir", dest_dir, package_name]
+    result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    if result.returncode == 0:
+        for file in os.listdir(dest_dir):
+            if file.endswith(".src.rpm"):
+                return os.path.join(dest_dir, file)
+    return None
+
+def extract_spec_file(srpm_path, dest_dir="./extracted_specs"):
+    os.makedirs(dest_dir, exist_ok=True)
+    try:
+        command = f"rpm2cpio {srpm_path} | cpio -idmv -D {dest_dir}"
+        subprocess.run(command, shell=True, check=True)
+        spec_files = [os.path.join(dest_dir, f) for f in os.listdir(dest_dir) if f.endswith(".spec")]
+        if spec_files:
+            return spec_files[0]
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to extract spec file from {srpm_path}: {e}")
+    return None
+
+def extract_tarballs(srpm_path, dest_dir="./extracted_sources"):
+    os.makedirs(dest_dir, exist_ok=True)
+    try:
+        command = f"rpm2cpio {srpm_path} | cpio -idmv -D {dest_dir}"
+        subprocess.run(command, shell=True, check=True)
+        tarballs = [os.path.join(dest_dir, f) for f in os.listdir(dest_dir) if f.endswith((".tar.gz", ".tar.bz2", ".tar.xz", ".tgz"))]
+        return tarballs
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to extract tarballs from {srpm_path}: {e}")
+    return []
+
+def extract_urls_from_spec(spec_file_path):
+    project_url = None
+    source_url = None
+    try:
+        with open(spec_file_path, "r") as spec_file:
+            for line in spec_file:
+                if line.startswith("URL:"):
+                    project_url = line.split(":", 1)[1].strip()
+                elif line.startswith("Source0:"):
+                    source_url = line.split(":", 1)[1].strip()
+    except FileNotFoundError:
+        print(f"Spec file not found: {spec_file_path}")
+    return project_url, source_url
+
+def process_tarball(tarball_path):
+    """Extract tarball, calculate SWHID for folder, and clean up."""
+    temp_dir = "./temp_tarball_extraction"
+    os.makedirs(temp_dir, exist_ok=True)
+    try:
+        # Extract the tarball
+        command = f"tar -xf {tarball_path} -C {temp_dir}"
+        subprocess.run(command, shell=True, check=True)
+        
+        # Calculate SWHID for the extracted folder
+        folder_swhid = compute_folder_swhid(temp_dir)
+        print("folder_swhid:", folder_swhid)
+        return folder_swhid
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to process tarball {tarball_path}: {e}")
+    finally:
+        cleanup_extracted_files(temp_dir)
+    return None
