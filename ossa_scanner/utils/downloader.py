@@ -26,17 +26,15 @@ def download_source(package_manager, package_name, output_dir):
             output_dir = os.path.join(output_dir, str(p_hash))
             os.makedirs(output_dir, exist_ok=True)
             source_path = get_rpm_source_package(package_name, output_dir)
-            print('source_path:', source_path)
-            
             if not source_path:
                 print(f"Source package for {package_name} not found in {package_name}.")
                 return
-            spec_file = extract_spec_file(source_path, output_dir)
+            spec_file = extract_rpm_spec_file(source_path, output_dir)
             print('spec_file:', spec_file)
             
             project_url, source_url = (None, None)
             if spec_file:
-                project_url, source_url = extract_urls_from_spec(spec_file)
+                project_url, source_url = extract_rpm_urls_from_spec(spec_file)
                 try:
                     with open(spec_file, "r") as spec:
                         for line in spec:
@@ -93,7 +91,7 @@ def get_rpm_source_package(package_name, dest_dir="./source_packages"):
                 return os.path.join(dest_dir, file)
     return None
 
-def extract_spec_file(srpm_path, dest_dir="./extracted_specs"):
+def extract_rpm_spec_file(srpm_path, dest_dir="./extracted_specs"):
     os.makedirs(dest_dir, exist_ok=True)
     try:
         command = f"rpm2cpio {srpm_path} | cpio -idmv -D {dest_dir}"
@@ -116,12 +114,13 @@ def extract_tarballs(srpm_path, dest_dir="./extracted_sources"):
         print(f"Failed to extract tarballs from {srpm_path}: {e}")
     return []
 
-def extract_urls_from_spec(spec_file_path):
+def extract_rpm_urls_from_spec(spec_file_path):
     project_url = None
     source_url = None
     try:
         with open(spec_file_path, "r") as spec_file:
             for line in spec_file:
+                print('line<>spec:', line)
                 if line.startswith("URL:"):
                     project_url = line.split(":", 1)[1].strip()
                 elif line.startswith("Source0:"):
