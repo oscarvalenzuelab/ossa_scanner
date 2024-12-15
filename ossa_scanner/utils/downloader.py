@@ -34,15 +34,9 @@ def download_source(package_manager, package_name, output_dir):
             
             project_url, source_url = (None, None)
             if spec_file:
-                project_url, source_url = extract_rpm_urls_from_spec(spec_file)
-                print("extract_rpm_urls_from_spec:",project_url,source_url)
-                try:
-                    with open(spec_file, "r") as spec:
-                        for line in spec:
-                            if line.startswith("License:"):
-                                licenses.append(line.split(":", 1)[1].strip())
-                except FileNotFoundError:
-                    print(f"Spec file not found: {spec_file}")
+                project_url, source_url, license = extract_rpm_info_from_spec(spec_file)
+                print("extract_rpm_urls_from_spec:",project_url,source_url, license)
+
                 cleanup_extracted_files(spec_dir)
             tarballs = extract_rpm_tarballs(source_path)
             exit()
@@ -115,9 +109,10 @@ def extract_rpm_tarballs(srpm_path, dest_dir="./extracted_sources"):
         print(f"Failed to extract tarballs from {srpm_path}: {e}")
     return []
 
-def extract_rpm_urls_from_spec(spec_file_path):
+def extract_rpm_info_from_spec(spec_file_path):
     project_url = None
     source_url = None
+    license = none
     try:
         with open(spec_file_path, "r") as spec_file:
             for line in spec_file:
@@ -125,9 +120,11 @@ def extract_rpm_urls_from_spec(spec_file_path):
                     project_url = line.split(":", 1)[1].strip()
                 elif line.startswith("Source0:"):
                     source_url = line.split(":", 1)[1].strip()
+                elif line.startswith("License:"):
+                    license = line.split(":", 1)[1].strip()
     except FileNotFoundError:
         print(f"Spec file not found: {spec_file_path}")
-    return project_url, source_url
+    return project_url, source_url, license
 
 def process_tarball(tarball_path):
     """Extract tarball, calculate SWHID for folder, and clean up."""
