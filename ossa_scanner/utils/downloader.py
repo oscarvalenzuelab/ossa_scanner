@@ -97,8 +97,8 @@ def extract_rpm_spec_file(srpm_path, dest_dir="./extracted_specs"):
 def extract_rpm_tarballs(srpm_path, dest_dir="./extracted_sources"):
     os.makedirs(dest_dir, exist_ok=True)
     try:
-        command = f"rpm2cpio {srpm_path} | cpio -idmv -D {dest_dir}"
-        subprocess.run(command, shell=True, check=True)
+        # command = f"rpm2cpio {srpm_path} | cpio -idmv -D {dest_dir}"
+        # subprocess.run(command, shell=True, check=True)
         tarballs = [os.path.join(dest_dir, f) for f in os.listdir(dest_dir) if f.endswith((".tar.gz", ".tar.bz2", ".tar.xz", ".tgz"))]
         return tarballs
     except subprocess.CalledProcessError as e:
