@@ -15,8 +15,6 @@ def download_source(package_manager, package_name, output_dir):
             # Fetch the source tarball
             cmd = ['brew', 'fetch', '--build-from-source', package_name]
             subprocess.run(cmd, check=True, capture_output=True, text=True)
-
-            # Locate the tarball in the cache
             cache_dir = subprocess.run(
                 ['brew', '--cache', package_name],
                 capture_output=True,
@@ -35,12 +33,9 @@ def download_source(package_manager, package_name, output_dir):
             if not matching_files:
                 raise FileNotFoundError(f"Tarball not found for {package_name} in {cache_folder}")
             tarball_path = matching_files[0]
-            # Move the tarball to the output directory
             os.makedirs(output_dir, exist_ok=True)
             target_path = os.path.join(output_dir, os.path.basename(tarball_path))
             shutil.move(tarball_path, target_path)
-
-            print(f"Source tarball for {package_name} moved to: {target_path}")
             return target_path
         else:
             raise ValueError("Unsupported package manager")
