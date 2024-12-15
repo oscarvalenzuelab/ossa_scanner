@@ -10,6 +10,7 @@ def download_source(package_manager, package_name, output_dir):
             subprocess.run(cmd, check=True)
         elif package_manager in ['yum', 'dnf']:
             cmd = ['dnf', 'download', '--source', package_name, '--downloaddir', output_dir]
+            print('cmd:', cmd)
             subprocess.run(cmd, check=True)
         elif package_manager == 'brew':
             # Fetch the source tarball
