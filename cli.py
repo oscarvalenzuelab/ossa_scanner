@@ -1,9 +1,9 @@
 import argparse
-from ossa_scanner.scanner import Scanner
-from ossa_scanner.uploader import GitHubUploader
+from ossa.scanner import Scanner
+from ossa.uploader import GitHubUploader
 
 def main():
-    parser = argparse.ArgumentParser(description="OSSA Scanner CLI Tool")
+    parser = argparse.ArgumentParser(description="OSSA CLI Tool")
     parser.add_argument('--output-dir', type=str, required=True, help="Directory to save downloaded source")
     parser.add_argument('--results-file', type=str, required=True, help="Path to save the JSON results")
     parser.add_argument('--threads', type=int, default=4, help="Number of threads for parallel processing")
@@ -16,7 +16,7 @@ def main():
 
     # Initialize the scanner
     scanner = Scanner(output_dir=args.output_dir, threads=args.threads)
-    
+
     # Perform scanning
     results = scanner.scan_packages()
 
