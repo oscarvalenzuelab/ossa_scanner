@@ -86,9 +86,9 @@ def parse_yum_info(output):
     info["name"] = "NOASSERTION"
     info["version"] = "NOASSERTION"
     info["licenses"] = "NOASSERTION"
-    info["references"] = "NOASSERTION"
-    info["description"] = "NOASSERTION"
     info["severity"] = "NOASSERTION"
+    info["references"] = "NOASSERTION"
+    info["summary"] = "NOASSERTION"
     lines = output.splitlines()
     for line in lines:
         if line.startswith("License"):
