@@ -22,6 +22,8 @@ def download_source(package_manager, package_name, output_dir):
             cmd = ['apt-get', 'source', package_name, '-d', output_dir]
             subprocess.run(cmd, check=True)
         elif package_manager in ['yum', 'dnf']:
+            p_hash = hash(package_name) % 10000
+            output_dir = os.path.join(output_dir, str(p_hash))
             os.makedirs(output_dir, exist_ok=True)
             source_path = get_rpm_source_package(package_name, output_dir)
             print('source_path:', source_path)
