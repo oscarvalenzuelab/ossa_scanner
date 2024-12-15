@@ -1,6 +1,6 @@
 import argparse
-from ossa_scanner.scanner import Scanner
-from ossa_scanner.uploader import GitHubUploader
+from .scanner import Scanner
+from .uploader import GitHubUploader
 
 def main():
     parser = argparse.ArgumentParser(description="OSSA Scanner CLI Tool")

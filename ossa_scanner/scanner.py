@@ -1,11 +1,12 @@
 import os
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from ossa_scanner.utils.os_detection import detect_os
-from ossa_scanner.utils.package_manager import list_packages, get_package_info, download_source
-from ossa_scanner.utils.hash_calculator import calculate_file_hash
-from ossa_scanner.utils.swhid_calculator import calculate_swhid
-from ossa_scanner.uploader import GitHubUploader
+from .utils.os_detection import detect_os
+from .utils.package_manager import list_packages, get_package_info
+from .utils.downloader import download_source
+from .utils.hash_calculator import calculate_file_hash
+from .utils.swhid_calculator import calculate_swhid
+from .uploader import GitHubUploader
 
 class Scanner:
     def __init__(self, output_dir, threads=4):

@@ -1,5 +1,5 @@
 #!/bin/bash
-rm -rf dist/* build/*
+rm -rf dist build ossa_scanner.egg-info
 python3 setup.py sdist bdist_wheel > scripts/build.log
 pip3 uninstall ossa_scanner > scripts/install.log
 rm -rf /opt/homebrew/lib/python3.12/site-packages/ossa_scanner/ >> scripts/install.log
