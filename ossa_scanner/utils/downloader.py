@@ -41,6 +41,7 @@ def download_source(package_manager, package_name, output_dir):
                 cleanup_extracted_files(spec_dir)
             tarballs = extract_tarballs(source_path)
             exit()
+            
         elif package_manager == 'brew':
             # Fetch the source tarball
             cmd = ['brew', 'fetch', '--build-from-source', package_name]
