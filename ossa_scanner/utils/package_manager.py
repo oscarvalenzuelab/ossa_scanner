@@ -65,10 +65,10 @@ def get_package_info(package_manager, package_name):
 def parse_brew_info(output):
     """Parses brew info output to extract license, website, and description."""
     info = {}
-    lines = output.splitlines()
     info["licenses"] = "NOASSERTION"
     info["references"] = "NOASSERTION"
     info["description"] = "NOASSERTION"
+    lines = output.splitlines()
 
     for i, line in enumerate(lines):
         if i == 1:  # The description is usually on the second line
@@ -82,26 +82,27 @@ def parse_brew_info(output):
     return info
 
 def parse_yum_info(output):
-    """Parses yum repoquery --info output."""
     info = {}
+    info["name"] = "NOASSERTION"
+    info["version"] = "NOASSERTION"
+    info["licenses"] = "NOASSERTION"
+    info["references"] = "NOASSERTION"
+    info["description"] = "NOASSERTION"
+    info["severity"] = "NOASSERTION"
     lines = output.splitlines()
     for line in lines:
-        print('yum_info:', line)
         if line.startswith("License"):
             info["licenses"] = line.split(":", 1)[1].strip()
+            info["severity"] = license_classificaton(info["licenses"])
         elif line.startswith("URL"):
             info["references"] = line.split(":", 1)[1].strip()
-        elif "Copyright" in line:
-            info["references"] = line.strip()
-    severity = license_classificaton(info["licenses"])
-
-    # Ensure all keys are present even if data is missing
-    return {
-        "licenses": info.get("licenses", "NOASSERTION"),
-        "copyright": info.get("copyright", "NOASSERTION"),
-        "references": info.get("references", "NOASSERTION"),
-        "severity": severity,
-    }
+        elif line.startswith("Name"):
+            info["name"] = line.split(":", 1)[1].strip()
+        elif line.startswith("Version"):
+            info["version"] = line.split(":", 1)[1].strip()
+        elif line.startswith("Summary"):
+            info["summary"] = line.split(":", 1)[1].strip()
+    return info
 
 
 def parse_apt_info(output):
