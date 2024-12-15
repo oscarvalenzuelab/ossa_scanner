@@ -10,7 +10,7 @@ def download_source(package_manager, package_name, output_dir):
             subprocess.run(cmd, check=True)
         elif package_manager in ['yum', 'dnf']:
             os.makedirs(output_dir, exist_ok=True)
-            command = ["yumdownloader", "--source", "--destdir", dest_dir, package_name]
+            command = ["yumdownloader", "--source", "--destdir", output_dir, package_name]
             result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             if result.returncode == 0:
                 for file in os.listdir(output_dir):
@@ -28,29 +28,6 @@ def download_source(package_manager, package_name, output_dir):
             except subprocess.CalledProcessError as e:
                 print(f"Failed to extract spec file from {srpm_path}: {e}")
             exit()
-            cmd = ['dnf', 'download', '--source', package_name, '--downloaddir', output_dir]
-            print('cmd:', cmd)
-            subprocess.run(cmd, check=True)
-            
-            # Locate the tarball in the output directory
-            prefixes_to_remove = ['aarch64-elf-', 'arm-none-eabi-', 'other-prefix-']
-            stripped_package_name = package_name
-            for prefix in prefixes_to_remove:
-                if package_name.startswith(prefix):
-                    stripped_package_name = package_name[len(prefix):]
-                    break
-
-            tarball_pattern = os.path.join(output_dir, f"*{stripped_package_name}*")
-            matching_files = glob.glob(tarball_pattern)
-            
-            if not matching_files:
-                raise FileNotFoundError(f"Tarball not found for {package_name} in {output_dir}")
-
-            print('matching_files:', matching_files)
-            tarball_path = matching_files[0]
-            target_path = os.path.join(output_dir, os.path.basename(tarball_path))
-            print(f"Source tarball for {package_name} located at: {tarball_path}")
-            return target_path
             
             
         elif package_manager == 'brew':
