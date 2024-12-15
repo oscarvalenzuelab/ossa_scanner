@@ -112,7 +112,7 @@ def extract_rpm_tarballs(srpm_path, dest_dir="./extracted_sources"):
 def extract_rpm_info_from_spec(spec_file_path):
     project_url = None
     source_url = None
-    license = none
+    license = None
     try:
         with open(spec_file_path, "r") as spec_file:
             for line in spec_file:
