@@ -26,20 +26,8 @@ class Scanner:
             source_files = download_source(self.os_type, package, self.temp_dir)
             print(f"Downloaded source file: {source_files}")
 
-            file_hash = calculate_file_hash(source_files)
-            print(f"Hash (SHA256) for {package}: {file_hash}")
-
-            # Extract source code directory in temp_dir
-            # This shouldn't be needed for non-Copyleft
-            source_dir = os.path.join(self.temp_dir, package)
-            # os.makedirs(source_dir, exist_ok=True)
-
-            # Calculate SWHID
-            swhid = calculate_swhid(source_dir)
-            print(f"SWHID for {package}: {swhid}")
-
             # Save report
-            self.save_package_report(package, package_info, file_hash, swhid, source_files)
+            self.save_package_report(package, package_info, source_files)
 
         except Exception as e:
             print(f"Error processing package {package}: {e}")
@@ -65,7 +53,7 @@ class Scanner:
                 except Exception as e:
                     print(f"Exception occurred for package {package}: {e}")
 
-    def save_package_report(self, package, package_info, file_hash, swhid, source_file):
+    def save_package_report(self, package, package_info, source_files):
         """
         Save the report for a single package.
 
@@ -91,6 +79,19 @@ class Scanner:
             affected_versions = ["*.*", package_info.get("version")]
         else:
             affected_versions = ["*.*"]
+            
+        for source_file in source_files:
+            file_hash = calculate_file_hash(source_file)
+            print(f"Hash (SHA256) for {package}: {file_hash}")
+
+            # Extract source code directory in temp_dir
+            # This shouldn't be needed for non-Copyleft
+            source_dir = os.path.join(self.temp_dir, package)
+            # os.makedirs(source_dir, exist_ok=True)
+
+            # Calculate SWHID
+            swhid = calculate_swhid(source_dir)
+            print(f"SWHID for {package}: {swhid}")
 
         # Create the report content
         report = {
