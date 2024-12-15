@@ -87,6 +87,11 @@ class Scanner:
         if "--" in artifact_name:
             artifact_name = artifact_name.split("--")[-1]
 
+        if package_info.get("version") != "*":
+            affected_versions = ["*.*", package_info.get("version")]
+        else:
+            affected_versions = ["*.*"]
+
         # Create the report content
         report = {
             "id": f"OSSA-{date_str}-{hash(package) % 10000}",
@@ -100,7 +105,7 @@ class Scanner:
             "description": f"Automatically generated OSSA for the package {package}.",
             "purls": [f"pkg:{self.os_type}/{package}"],
             "regex": [f"^pkg:{self.os_type}/{package}.*"],
-            "affected_versions": ["*.*"],
+            "affected_versions": affected_versions,
             "artifacts": [
                 {
                     "url": f"file://{artifact_name}",

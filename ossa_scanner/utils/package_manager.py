@@ -1,4 +1,5 @@
 import subprocess
+import re
 
 
 def list_packages(package_manager):
@@ -65,14 +66,30 @@ def get_package_info(package_manager, package_name):
 def parse_brew_info(output):
     """Parses brew info output to extract license, website, and description."""
     info = {}
+    info["name"] = "NOASSERTION"
+    info["version"] = "NOASSERTION"
     info["licenses"] = "NOASSERTION"
+    info["severity"] = "NOASSERTION"
     info["references"] = "NOASSERTION"
-    info["description"] = "NOASSERTION"
+    info["summary"] = "NOASSERTION"
     lines = output.splitlines()
 
     for i, line in enumerate(lines):
-        if i == 1:  # The description is usually on the second line
-            info["description"] = line.strip()
+        print('brew_info:', line)
+        if line.startswith("==>") and ":" in line:
+            new_line = line.lstrip("==>").strip()
+            match1 = re.match(r"([^:]+):.*?([\d\.a-zA-Z]+)\s*\(", new_line)
+            match2 = re.match(r"([^:]+):", new_line)
+            if match1:
+                pname = match1.group(1).strip()
+                version = match1.group(2).strip()
+            elif match2:
+                pname = match2.group(1).strip()
+                version = "*"
+            info["name"] = pname
+            info["version"] = version
+        elif i == 1:
+            info["summary"] = line.strip()
         elif line.startswith("https://"):  # The website URL
             info["references"] = line.strip()
         elif line.startswith("License:"):  # The license information
