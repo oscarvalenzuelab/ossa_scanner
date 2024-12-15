@@ -24,10 +24,14 @@ def download_source(package_manager, package_name, output_dir):
         elif package_manager in ['yum', 'dnf']:
             os.makedirs(output_dir, exist_ok=True)
             source_path = get_rpm_source_package(package_name, output_dir)
+            print('source_path:', source_path)
+            
             if not source_path:
                 print(f"Source package for {package_name} not found in {package_name}.")
                 return
             spec_file = extract_spec_file(source_path, output_dir)
+            print('spec_file:', spec_file)
+            
             project_url, source_url = (None, None)
             if spec_file:
                 project_url, source_url = extract_urls_from_spec(spec_file)
