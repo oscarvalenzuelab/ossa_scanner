@@ -93,7 +93,7 @@ def parse_yum_info(output):
             info["references"] = line.split(":", 1)[1].strip()
         elif "Copyright" in line:
             info["references"] = line.strip()
-        severity = license_classificaton(info["licenses"])
+    severity = license_classificaton(info["licenses"])
 
     # Ensure all keys are present even if data is missing
     return {
