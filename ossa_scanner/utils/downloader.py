@@ -36,9 +36,7 @@ def download_source(package_manager, package_name, output_dir):
                 print("extract_rpm_urls_from_spec:",project_url,source_url, license)
                 cleanup_extracted_files(spec_file)
             tarballs = extract_rpm_tarballs(source_path)
-            print('tarballs:', tarballs)
-            exit()
-            
+            return tarballs
         elif package_manager == 'brew':
             # Fetch the source tarball
             cmd = ['brew', 'fetch', '--build-from-source', package_name]
@@ -64,7 +62,7 @@ def download_source(package_manager, package_name, output_dir):
             os.makedirs(output_dir, exist_ok=True)
             target_path = os.path.join(output_dir, os.path.basename(tarball_path))
             shutil.move(tarball_path, target_path)
-            return target_path
+            return [target_path]
         else:
             raise ValueError("Unsupported package manager")
     except subprocess.CalledProcessError as e:
@@ -123,22 +121,3 @@ def extract_rpm_info_from_spec(spec_file_path):
     except FileNotFoundError:
         print(f"Spec file not found: {spec_file_path}")
     return project_url, source_url, license
-
-def process_tarball(tarball_path):
-    """Extract tarball, calculate SWHID for folder, and clean up."""
-    temp_dir = "./temp_tarball_extraction"
-    os.makedirs(temp_dir, exist_ok=True)
-    try:
-        # Extract the tarball
-        command = f"tar -xf {tarball_path} -C {temp_dir}"
-        subprocess.run(command, shell=True, check=True)
-        
-        # Calculate SWHID for the extracted folder
-        folder_swhid = compute_folder_swhid(temp_dir)
-        print("folder_swhid:", folder_swhid)
-        return folder_swhid
-    except subprocess.CalledProcessError as e:
-        print(f"Failed to process tarball {tarball_path}: {e}")
-    finally:
-        cleanup_extracted_files(temp_dir)
-    return None
