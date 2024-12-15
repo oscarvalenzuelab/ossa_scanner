@@ -86,7 +86,7 @@ def extract_rpm_spec_file(srpm_path, dest_dir="./extracted_specs"):
     os.makedirs(dest_dir, exist_ok=True)
     try:
         command = f"rpm2cpio {srpm_path} | cpio -idmv -D {dest_dir}"
-        subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        subprocess.run(command, shell=True, check=True)
         spec_files = [os.path.join(dest_dir, f) for f in os.listdir(dest_dir) if f.endswith(".spec")]
         if spec_files:
             return spec_files[0]
