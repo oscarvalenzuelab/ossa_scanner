@@ -85,7 +85,7 @@ def get_rpm_source_package(package_name, dest_dir="./source_packages"):
 def extract_rpm_spec_file(srpm_path, dest_dir="./extracted_specs"):
     os.makedirs(dest_dir, exist_ok=True)
     try:
-        command = f"rpm2cpio {srpm_path} | cpio -idmv -D {dest_dir}"
+        command = f"rpm2cpio {srpm_path} | cpio -idmv -D {dest_dir} > /tmp/ossa_gen.log"
         subprocess.run(command, shell=True, check=True)
         spec_files = [os.path.join(dest_dir, f) for f in os.listdir(dest_dir) if f.endswith(".spec")]
         if spec_files:
