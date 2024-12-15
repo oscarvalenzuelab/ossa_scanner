@@ -72,7 +72,8 @@ class Scanner:
             affected_versions = ["*.*", package_info.get("version")]
         else:
             affected_versions = ["*.*"]
-            
+        
+        print('package_info:', package_info)
         for source_file in source_files:
             file_hash = calculate_file_hash(source_file)
             print(f"Hash (SHA256) for {package}: {file_hash}")
