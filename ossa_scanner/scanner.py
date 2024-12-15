@@ -23,22 +23,23 @@ class Scanner:
             package_info = get_package_info(self.os_type, package)
             print(f"Fetched metadata for {package}")
 
-            source_file = download_source(self.os_type, package, self.temp_dir)
-            print(f"Downloaded source file: {source_file}")
+            source_files = download_source(self.os_type, package, self.temp_dir)
+            print(f"Downloaded source file: {source_files}")
 
-            file_hash = calculate_file_hash(source_file)
+            file_hash = calculate_file_hash(source_files)
             print(f"Hash (SHA256) for {package}: {file_hash}")
 
             # Extract source code directory in temp_dir
+            # This shouldn't be needed for non-Copyleft
             source_dir = os.path.join(self.temp_dir, package)
-            os.makedirs(source_dir, exist_ok=True)
+            # os.makedirs(source_dir, exist_ok=True)
 
             # Calculate SWHID
             swhid = calculate_swhid(source_dir)
             print(f"SWHID for {package}: {swhid}")
 
             # Save report
-            self.save_package_report(package, package_info, file_hash, swhid, source_file)
+            self.save_package_report(package, package_info, file_hash, swhid, source_files)
 
         except Exception as e:
             print(f"Error processing package {package}: {e}")
