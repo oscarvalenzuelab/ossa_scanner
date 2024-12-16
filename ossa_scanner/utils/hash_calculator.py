@@ -9,7 +9,6 @@ def calculate_file_hash(file_path):
     file_hash['sha256'] = compute_sha256(file_path)
     file_hash['ssdeep'] = compute_fuzzy_hash(file_path)
     file_hash['swhid'] = compute_swhid(file_path)
-    print(file_hash)
     return file_hash
 
 def compute_sha1(file_path):
