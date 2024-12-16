@@ -74,7 +74,9 @@ class Scanner:
             affected_versions = ["*.*"]
         
         print('package_info:', package_info)
+        artifacts = []
         for source_file in source_files:
+            artifact = {}
             file_hash = calculate_file_hash(source_file)
             print(f"Hash (SHA256) for {package}: {file_hash}")
 
@@ -93,6 +95,9 @@ class Scanner:
                 artifact_name = os.path.basename(source_file)
             if "--" in artifact_name:
                 artifact_name = artifact_name.split("--")[-1]
+            artifact['artifact_name'] = artifact_name
+            artifacts.append(artifact)
+        print('artifacts:', artifacts)
 
         # Create the report content
         report = {
