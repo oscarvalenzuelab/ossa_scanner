@@ -77,27 +77,32 @@ class Scanner:
         artifacts = []
         for source_file in source_files:
             artifact = {}
+    
+            # Calculate the hash of the source file
             file_hash = calculate_file_hash(source_file)
             print(f"Hash (SHA256) for {package}: {file_hash}")
+            artifact['hashes'] = {'sha256': file_hash}
 
             # Extract source code directory in temp_dir
-            # This shouldn't be needed for non-Copyleft
+            # Only required if calculating SWHID
             source_dir = os.path.join(self.temp_dir, package)
-            # os.makedirs(source_dir, exist_ok=True)
+            os.makedirs(source_dir, exist_ok=True)
 
             # Calculate SWHID
             swhid = calculate_swhid(source_dir)
             print(f"SWHID for {package}: {swhid}")
-            
-            # This need to be moved to a different class
-            artifact_name = source_file
-            if "tmp/" in source_file:
-                artifact_name = os.path.basename(source_file)
+            artifact['swhid'] = swhid
+
+            # Clean up the artifact name
+            artifact_name = os.path.basename(source_file)
             if "--" in artifact_name:
                 artifact_name = artifact_name.split("--")[-1]
             artifact['artifact_name'] = artifact_name
+
+            # Append the artifact to the list
             artifacts.append(artifact)
-        print('artifacts:', artifacts)
+
+        print('Artifacts:', artifacts)
 
         # Create the report content
         report = {
