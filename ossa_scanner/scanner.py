@@ -21,14 +21,8 @@ class Scanner:
         try:
             print(f"Processing package: {package}")
             package_info = get_package_info(self.os_type, package)
-            print(f"Fetched metadata for {package}")
-
             source_files = download_source(self.os_type, package, self.temp_dir)
-            print(f"Downloaded source file: {source_files}")
-
-            # Save report
             self.save_package_report(package, package_info, source_files)
-
         except Exception as e:
             print(f"Error processing package {package}: {e}")
 
@@ -54,15 +48,6 @@ class Scanner:
                     print(f"Exception occurred for package {package}: {e}")
 
     def save_package_report(self, package, package_info, source_files):
-        """
-        Save the report for a single package.
-
-        Args:
-            package (str): Package name.
-            package_info (dict): Information about the package.
-            file_hash (str): SHA256 hash of the downloaded source.
-            swhid (str): Software Heritage ID of the package.
-        """
         # Generate report filename
         date_str = datetime.now().strftime("%Y%m%d")
         report_filename = f"ossa-{date_str}-{hash(package) % 10000}-{package}.json"
@@ -73,14 +58,12 @@ class Scanner:
         else:
             affected_versions = ["*.*"]
         
-        print('package_info:', package_info)
         artifacts = []
         for source_file in source_files:
             artifact = {}
     
             # Calculate the hash of the source file
             file_hash = calculate_file_hash(source_file)
-            print(f"Hash (SHA256) for {package}: {file_hash}")
             artifact['hashes'] = {'sha256': file_hash}
 
             # Extract source code directory in temp_dir
@@ -90,7 +73,6 @@ class Scanner:
 
             # Calculate SWHID
             swhid = calculate_swhid(source_dir)
-            print(f"SWHID for {package}: {swhid}")
             artifact['swhid'] = swhid
 
             # Clean up the artifact name
