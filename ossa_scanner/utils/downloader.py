@@ -34,7 +34,6 @@ def download_source(package_manager, package_name, output_dir):
             if spec_file:
                 project_url, source_url, license = extract_rpm_info_from_spec(spec_file)
             tarballs = extract_rpm_tarballs(source_path, output_dir)
-            print('tarballs:', tarballs)
             return tarballs
         elif package_manager == 'brew':
             # Fetch the source tarball
