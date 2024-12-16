@@ -30,11 +30,12 @@ def download_source(package_manager, package_name, output_dir):
                 print(f"Source package for {package_name} not found in {package_name}.")
                 return
             spec_file = extract_rpm_spec_file(source_path, output_dir)
-            print('spec_file:', spec_file)
             project_url, source_url = (None, None)
             if spec_file:
                 project_url, source_url, license = extract_rpm_info_from_spec(spec_file)
+            print('extract_rpm_info_from_spec:', project_url, source_url, license)
             tarballs = extract_rpm_tarballs(source_path)
+            print('tarballs:', tarballs)
             return tarballs
         elif package_manager == 'brew':
             # Fetch the source tarball
