@@ -66,12 +66,12 @@ class Scanner:
             artifact_name = os.path.basename(source_file)
             if "--" in artifact_name:
                 artifact_name = artifact_name.split("--")[-1]
-            artifact[artifact_name] = {}
+            artifact['url'] = "file://" + artifact_name
             
                 
             # Calculate the hash of the source file
             file_hash = calculate_file_hash(source_file)
-            artifact[artifact_name]['hashes'] = file_hash
+            artifact['hashes'] = file_hash
 
             # Extract source code directory in temp_dir
             # Only required if calculating SWHID
@@ -80,7 +80,7 @@ class Scanner:
 
             # Calculate SWHID
             swhid = calculate_swhid(source_dir)
-            artifact[artifact_name]['swhid'] = swhid
+            artifact['swhid'] = swhid
 
             # Append the artifact to the list
             artifacts.append(artifact)
