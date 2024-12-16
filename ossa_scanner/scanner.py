@@ -71,7 +71,7 @@ class Scanner:
                 
             # Calculate the hash of the source file
             file_hash = calculate_file_hash(source_file)
-            artifact[artifact_name]['hashes'] = {'sha256': file_hash}
+            artifact[artifact_name]['hashes'] = file_hash
 
             # Extract source code directory in temp_dir
             # Only required if calculating SWHID
