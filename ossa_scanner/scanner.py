@@ -101,15 +101,7 @@ class Scanner:
             "purls": [f"pkg:{self.os_type}/{package}"],
             "regex": [f"^pkg:{self.os_type}/{package}.*"],
             "affected_versions": affected_versions,
-            "artifacts": [
-                {
-                    "url": f"file://{artifact_name}",
-                    "hashes": {
-                        "sha1": file_hash['sha1'], "sha256": file_hash['sha256'], 
-                        "ssdeep": file_hash['ssdeep'], "swhid": file_hash['swhid']},
-                    "swhid": swhid
-                }
-            ],
+            "artifacts": artifacts,
             "licenses": package_info.get("licenses", []),
             "aliases": package_info.get("aliases", []),
             "references": package_info.get("references", [])
