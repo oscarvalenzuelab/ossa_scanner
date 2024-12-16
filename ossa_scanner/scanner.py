@@ -95,7 +95,7 @@ class Scanner:
             "approvals": [{"consumption": True, "externalization": True}],
             "description": f"Automatically generated OSSA for the package {purl_name}.",
             "purls": [f"pkg:{self.os_type}/{purl_name}@{purl_version}"],
-            "regex": [f"^pkg:{self.os_type}/{package}.*"],
+            "regex": [f"^pkg:{self.os_type}/{purl_name}.*"],
             "affected_versions": affected_versions,
             "artifacts": artifacts,
             "licenses": package_info.get("licenses", []),
