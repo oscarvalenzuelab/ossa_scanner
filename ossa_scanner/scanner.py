@@ -61,10 +61,17 @@ class Scanner:
         artifacts = []
         for source_file in source_files:
             artifact = {}
-    
+            
+            # Clean up the artifact name
+            artifact_name = os.path.basename(source_file)
+            if "--" in artifact_name:
+                artifact_name = artifact_name.split("--")[-1]
+            artifact[artifact_name] = {}
+            
+                
             # Calculate the hash of the source file
             file_hash = calculate_file_hash(source_file)
-            artifact['hashes'] = {'sha256': file_hash}
+            artifact[artifact_name]['hashes'] = {'sha256': file_hash}
 
             # Extract source code directory in temp_dir
             # Only required if calculating SWHID
@@ -73,13 +80,7 @@ class Scanner:
 
             # Calculate SWHID
             swhid = calculate_swhid(source_dir)
-            artifact['swhid'] = swhid
-
-            # Clean up the artifact name
-            artifact_name = os.path.basename(source_file)
-            if "--" in artifact_name:
-                artifact_name = artifact_name.split("--")[-1]
-            artifact['artifact_name'] = artifact_name
+            artifact[artifact_name]['swhid'] = swhid
 
             # Append the artifact to the list
             artifacts.append(artifact)
