@@ -57,19 +57,17 @@ class Scanner:
             affected_versions = ["*.*", package_info.get("version")]
         else:
             affected_versions = ["*.*"]
-        
+
         artifacts = []
         for source_file in source_files:
             artifact = {}
-            
+
             # Clean up the artifact name
             artifact_name = os.path.basename(source_file)
             if "--" in artifact_name:
                 artifact_name = artifact_name.split("--")[-1]
             artifact['url'] = "file://" + artifact_name
-            
-                
-            # Calculate the hash of the source file
+
             file_hash = calculate_file_hash(source_file)
             artifact['hashes'] = file_hash
 
@@ -77,15 +75,10 @@ class Scanner:
             # Only required if calculating SWHID
             source_dir = os.path.join(self.temp_dir, package)
             os.makedirs(source_dir, exist_ok=True)
-
-            # Calculate SWHID
             swhid = calculate_swhid(source_dir)
             artifact['swhid'] = swhid
-
-            # Append the artifact to the list
+            
             artifacts.append(artifact)
-
-        print('Artifacts:', artifacts)
 
         # Create the report content
         report = {
