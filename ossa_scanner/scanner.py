@@ -79,6 +79,9 @@ class Scanner:
             artifact['swhid'] = swhid
             
             artifacts.append(artifact)
+        
+        purl_name = package_info.get("name")
+        purl_version = package_info.get("version")
 
         # Create the report content
         report = {
@@ -91,7 +94,7 @@ class Scanner:
             "last_updated": datetime.now().isoformat(),
             "approvals": [{"consumption": True, "externalization": True}],
             "description": f"Automatically generated OSSA for the package {package}.",
-            "purls": [f"pkg:{self.os_type}/{package}"],
+            "purls": [f"pkg:{self.os_type}/{purl_name}@{purl_version}"],
             "regex": [f"^pkg:{self.os_type}/{package}.*"],
             "affected_versions": affected_versions,
             "artifacts": artifacts,
