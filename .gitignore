@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+ossa_reports/
 *.py[cod]
 *$py.class
 

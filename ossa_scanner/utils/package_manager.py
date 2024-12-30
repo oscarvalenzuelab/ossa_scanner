@@ -93,7 +93,7 @@ def parse_brew_info(output):
             info["references"] = line.strip()
         elif line.startswith("License:"):  # The license information
             info["licenses"] = line.split(":", 1)[1].strip()
-    info["severity"] = license_classificaton(info["licenses"])
+    info["severity"], info["rason"] = license_classificaton(info["licenses"])
 
     return info
 
@@ -109,7 +109,7 @@ def parse_yum_info(output):
     for line in lines:
         if line.startswith("License"):
             info["licenses"] = line.split(":", 1)[1].strip()
-            info["severity"] = license_classificaton(info["licenses"])
+            info["severity"], info["rason"] = license_classificaton(info["licenses"])
         elif line.startswith("URL"):
             info["references"] = line.split(":", 1)[1].strip()
         elif line.startswith("Name"):
@@ -144,9 +144,18 @@ def parse_apt_info(output):
     }
 
 def license_classificaton(licenses):
-    copyleft_licenses = ['GPL', 'CDDL', 'MPL']
+    license_categories = {
+        "copyleft": ["GPL", "AGPL"],
+        "weak_copyleft": ["LGPL", "MPL", "EPL", "CDDL"],
+        "permissive": ["MIT", "BSD", "Apache"]
+    }
     severity = "Informational"
-    for cl_license in copyleft_licenses:
-        if cl_license.lower() in licenses:
+    reason = "PURL identification for OSSBOMER"
+    for license in licenses:
+        if any(license.startswith(c) for c in license_categories["copyleft"]):
+            severity = "High"
+            reason = "This package contains copyleft licenses, which impose strong obligations."
+        elif any(license.startswith(c) for c in license_categories["weak_copyleft"]):
             severity = "Medium"
-    return severity
+            reason = "This package contains weak copyleft licenses, which impose moderate obligations."
+    return severity, reason
