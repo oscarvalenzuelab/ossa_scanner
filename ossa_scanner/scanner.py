@@ -61,38 +61,6 @@ class Scanner:
         unique_spdx_ids = sorted(set(cleaned_ids))
         return ", ".join(unique_spdx_ids) if unique_spdx_ids else "No valid SPDX licenses found"
 
-    def process_tarball(self, tarball_path):
-        """Extract tarball, calculate SWHID for folder, and clean up."""
-        temp_dir = "./temp_tarball_extraction"
-        os.makedirs(temp_dir, exist_ok=True)
-        try:
-            # Extract the tarball
-            command = f"tar -xf {tarball_path} -C {temp_dir}"
-            subprocess.run(command, shell=True, check=True)
-        
-            # Calculate SWHID for the extracted folder
-            folder_swhid = calculate_swhid(temp_dir)
-            print("folder_swhid:", folder_swhid)
-            return folder_swhid
-        except subprocess.CalledProcessError as e:
-            print(f"Failed to process tarball {tarball_path}: {e}")
-        finally:
-            self.cleanup_extracted_files(temp_dir)
-        return None
-
-    def cleanup_extracted_files(self, folder_path):
-        """Recursively clean up files and directories in the specified folder."""
-        try:
-            for file_path in glob.glob(f"{folder_path}/*"):
-                if os.path.isdir(file_path):
-                    shutil.rmtree(file_path)  # Recursively delete directories
-                    print(f"Deleted directory: {file_path}")
-                else:
-                    os.remove(file_path)  # Delete files
-                    print(f"Deleted file: {file_path}")
-        except Exception as e:
-            print(f"Failed to clean up {folder_path}: {e}")
-
     def save_package_report(self, package, package_info, source_files):
         # Generate report filename
         purl_name = package_info.get("name")
@@ -124,7 +92,7 @@ class Scanner:
             # Only required if calculating SWHID
             source_dir = os.path.join(self.temp_dir, package)
             os.makedirs(source_dir, exist_ok=True)
-            swhid = self.process_tarball(source_file)
+            swhid = calculate_swhid(source_dir, source_file)
             artifact['swhid'] = swhid
 
             artifacts.append(artifact)
