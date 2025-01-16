@@ -4,7 +4,7 @@ import subprocess
 
 def calculate_swhid(directory_path, file_path):
     print(directory_path, file_path)
-    os.makedirs(temp_dir, exist_ok=True)
+    os.makedirs(directory_path, exist_ok=True)
     try:
         command = f"tar -xf {file_path} -C {directory_path}"
         subprocess.run(command, shell=True, check=True)
