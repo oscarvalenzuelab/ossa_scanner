@@ -109,7 +109,7 @@ class Scanner:
             "regex": [f"^pkg:{os_type}/{purl_name}.*"],
             "affected_versions": affected_versions,
             "artifacts": artifacts,
-            "licenses": extract_spdx_ids(package_info.get("licenses", [])),
+            "licenses": self.extract_spdx_ids(package_info.get("licenses", [])),
             "aliases": package_info.get("aliases", []),
             "references": package_info.get("references", [])
         }
