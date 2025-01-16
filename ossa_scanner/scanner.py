@@ -87,7 +87,7 @@ class Scanner:
 
             # Extract source code directory in temp_dir
             # Only required if calculating SWHID
-            source_dir = os.path.join(self.temp_dir, package)
+            source_dir = os.path.join(self.temp_dir, source_file)
             os.makedirs(source_dir, exist_ok=True)
             swhid = calculate_swhid(source_dir)
             artifact['swhid'] = swhid
