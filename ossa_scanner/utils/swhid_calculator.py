@@ -36,4 +36,4 @@ def cleanup_extracted_files(directory_path):
                 os.remove(file_path)  # Delete files
                 print(f"Deleted file: {file_path}")
     except Exception as e:
-        print(f"Failed to clean up {folder_path}: {e}")
+        print(f"Failed to clean up {directory_path}: {e}")
