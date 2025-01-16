@@ -47,6 +47,16 @@ class Scanner:
                 except Exception as e:
                     print(f"Exception occurred for package {package}: {e}")
 
+    def extract_spdx_ids(license_string):
+        if not license_string.strip():
+            return "No valid SPDX licenses found"
+    
+        # Remove parentheses and split by AND/OR
+        raw_ids = re.split(r'\bAND\b|\bOR\b|\(|\)', license_string)
+        cleaned_ids = [spdx.strip() for spdx in raw_ids if spdx.strip()]
+        unique_spdx_ids = sorted(set(cleaned_ids))
+        return ", ".join(unique_spdx_ids) if unique_spdx_ids else "No valid SPDX licenses found"
+
     def save_package_report(self, package, package_info, source_files):
         # Generate report filename
         purl_name = package_info.get("name")
@@ -99,7 +109,7 @@ class Scanner:
             "regex": [f"^pkg:{os_type}/{purl_name}.*"],
             "affected_versions": affected_versions,
             "artifacts": artifacts,
-            "licenses": package_info.get("licenses", []),
+            "licenses": extract_spdx_ids(package_info.get("licenses", [])),
             "aliases": package_info.get("aliases", []),
             "references": package_info.get("references", [])
         }
