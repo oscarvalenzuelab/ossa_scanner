@@ -1,2 +1,1 @@
-* generate package aliases based on name
 * replace calculate_swhid.
