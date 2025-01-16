@@ -25,7 +25,7 @@ def calculate_swhid(directory_path, file_path):
         cleanup_extracted_files(directory_path)
     return None
 
-def cleanup_extracted_files(self, directory_path):
+def cleanup_extracted_files(directory_path):
     """Recursively clean up files and directories in the specified folder."""
     try:
         for file_path in glob.glob(f"{directory_path}/*"):
