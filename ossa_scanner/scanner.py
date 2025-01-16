@@ -74,8 +74,21 @@ class Scanner:
         except subprocess.CalledProcessError as e:
             print(f"Failed to process tarball {tarball_path}: {e}")
         finally:
-            cleanup_extracted_files(temp_dir)
+            self.cleanup_extracted_files(temp_dir)
         return None
+
+    def cleanup_extracted_files(self, folder_path):
+        """Recursively clean up files and directories in the specified folder."""
+        try:
+            for file_path in glob.glob(f"{folder_path}/*"):
+                if os.path.isdir(file_path):
+                    shutil.rmtree(file_path)  # Recursively delete directories
+                    print(f"Deleted directory: {file_path}")
+                else:
+                    os.remove(file_path)  # Delete files
+                    print(f"Deleted file: {file_path}")
+        except Exception as e:
+            print(f"Failed to clean up {folder_path}: {e}")
 
     def save_package_report(self, package, package_info, source_files):
         # Generate report filename
