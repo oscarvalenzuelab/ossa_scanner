@@ -47,7 +47,7 @@ class Scanner:
                 except Exception as e:
                     print(f"Exception occurred for package {package}: {e}")
 
-    def extract_spdx_ids(license_string):
+    def extract_spdx_ids(self, license_string):
         if not license_string.strip():
             return "No valid SPDX licenses found"
     
