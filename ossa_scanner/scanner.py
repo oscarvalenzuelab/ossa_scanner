@@ -49,8 +49,11 @@ class Scanner:
 
     def save_package_report(self, package, package_info, source_files):
         # Generate report filename
+        purl_name = package_info.get("name")
+        purl_version = package_info.get("version")
+        os_type = "deb" if self.os_type == "apt" else "rpm" if self.os_type == "yum" else self.os_type
         date_str = datetime.now().strftime("%Y%m%d")
-        report_filename = f"ossa-{date_str}-{hash(package) % 10000}-{package}.json"
+        report_filename = f"ossa-{date_str}-{hash(package) % 10000}-{purl_name}.json"
         report_path = os.path.join(self.output_dir, report_filename)
 
         if package_info.get("version") != "*":
@@ -79,10 +82,6 @@ class Scanner:
             artifact['swhid'] = swhid
 
             artifacts.append(artifact)
-
-        purl_name = package_info.get("name")
-        purl_version = package_info.get("version")
-        os_type = "deb" if self.os_type == "apt" else "rpm" if self.os_type == "yum" else self.os_type
 
         # Create the report content
         report = {
