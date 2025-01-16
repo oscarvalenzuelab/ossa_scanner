@@ -1,1 +1,2 @@
 * fix severity
+* standarize file name to all purls
