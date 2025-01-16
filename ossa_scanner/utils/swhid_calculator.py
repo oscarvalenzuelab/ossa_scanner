@@ -4,6 +4,7 @@ def calculate_swhid(directory_path):
     """Calculate the SWHID for a folder using `sw identify .`."""
     try:
         command = ["swh.identify", directory_path]
+        print(command)
         result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         if result.returncode == 0:
             for line in result.stdout.strip().split("\n"):
