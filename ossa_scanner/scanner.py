@@ -123,7 +123,7 @@ class Scanner:
             # Only required if calculating SWHID
             source_dir = os.path.join(self.temp_dir, package)
             os.makedirs(source_dir, exist_ok=True)
-            swhid = self.process_tarball(source_dir)
+            swhid = self.process_tarball(source_file)
             artifact['swhid'] = swhid
 
             artifacts.append(artifact)
