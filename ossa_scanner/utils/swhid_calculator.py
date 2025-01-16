@@ -1,3 +1,4 @@
+import subprocess
 
 def calculate_swhid(directory_path):
     """Calculate the SWHID for a folder using `sw identify .`."""
