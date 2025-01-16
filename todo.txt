@@ -1,4 +1,2 @@
-* replace yum by rpm on the purl (reports)
-* replace description by package description
 * generate package aliases based on name
 * replace calculate_swhid.
