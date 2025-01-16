@@ -120,7 +120,6 @@ def parse_yum_info(output):
             info["summary"] = line.split(":", 1)[1].strip()
     return info
 
-
 def parse_apt_info(output):
     """Parses apt-cache show output."""
     info = {}
@@ -152,10 +151,10 @@ def license_classificaton(licenses):
     severity = "Informational"
     reason = "PURL identification for OSSBOMER"
     for license in licenses:
-        if any(license.startswith(c) for c in license_categories["copyleft"]):
+        if any(license.lower().startswith(c.upper()) for c in license_categories["copyleft"]):
             severity = "High"
             reason = "This package contains copyleft licenses, which impose strong obligations."
-        elif any(license.startswith(c) for c in license_categories["weak_copyleft"]):
+        elif any(license.startswith(c.upper()) for c in license_categories["weak_copyleft"]):
             severity = "Medium"
             reason = "This package contains weak copyleft licenses, which impose moderate obligations."
     return severity, reason

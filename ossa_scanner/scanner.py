@@ -56,7 +56,7 @@ class Scanner:
             return "No valid SPDX licenses found"
     
         # Remove parentheses and split by AND/OR
-        raw_ids = re.split(r'\bAND\b|\bOR\b|\(|\)', license_string)
+        raw_ids = re.split(r'\bAND\b|\bOR\b|\(|\)', license_string.upper())
         cleaned_ids = [spdx.strip() for spdx in raw_ids if spdx.strip()]
         unique_spdx_ids = sorted(set(cleaned_ids))
         return ", ".join(unique_spdx_ids) if unique_spdx_ids else "No valid SPDX licenses found"
