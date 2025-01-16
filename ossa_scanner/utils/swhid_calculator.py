@@ -1,3 +1,5 @@
+import os
+import shutil
 import subprocess
 
 def calculate_swhid(directory_path, file_path):
