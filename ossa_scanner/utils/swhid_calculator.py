@@ -22,7 +22,7 @@ def calculate_swhid(directory_path, file_path):
     except subprocess.CalledProcessError as e:
         print(f"Failed to process tarball {file_path}: {e}")
     finally:
-        self.cleanup_extracted_files(directory_path)
+        cleanup_extracted_files(directory_path)
     return None
 
 def cleanup_extracted_files(self, directory_path):
