@@ -30,7 +30,7 @@ class Scanner:
         """
         Scans all packages in the repository and processes them in parallel.
         """
-        print(f"Detected OS: {self.os_type}")
+        print(f"Detected Package Manager: {self.os_type}")
         print("Listing available packages...")
         packages = list_packages(self.os_type)
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
@@ -82,6 +82,7 @@ class Scanner:
 
         purl_name = package_info.get("name")
         purl_version = package_info.get("version")
+        os_type = "deb" if self.os_type == "apt" else "rpm" if self.os_type == "yum" else self.os_type
 
         # Create the report content
         report = {
