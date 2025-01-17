@@ -7,7 +7,7 @@ import subprocess
 import hashlib
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from .utils.os_detection import detect_os
+from .utils.os_detection import detect_os, detect_pm
 from .utils.package_manager import list_packages, get_package_info
 from .utils.downloader import download_source
 from .utils.hash_calculator import calculate_file_hash
@@ -18,14 +18,15 @@ class Scanner:
         self.output_dir = output_dir
         self.temp_dir = temp_dir
         self.os_type = detect_os()
+        self.pm_type = detect_pm()
         self.threads = threads
         os.makedirs(self.temp_dir, exist_ok=True)
 
     def process_package(self, package):
         try:
             print(f"Processing package: {package}")
-            package_info = get_package_info(self.os_type, package)
-            source_files = download_source(self.os_type, package, self.temp_dir)
+            package_info = get_package_info(self.pm_type, package)
+            source_files = download_source(self.pm_type, package, self.temp_dir)
             self.save_package_report(package, package_info, source_files)
         except Exception as e:
             print(f"Error processing package {package}: {e}")
@@ -34,9 +35,9 @@ class Scanner:
         """
         Scans all packages in the repository and processes them in parallel.
         """
-        print(f"Detected Package Manager: {self.os_type}")
+        print(f"Detected Package Manager: {self.pm_type}")
         print("Listing available packages...")
-        packages = list_packages(self.os_type)
+        packages = list_packages(self.pm_type)
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             # Submit tasks for parallel processing
             future_to_package = {
@@ -55,7 +56,8 @@ class Scanner:
         # Generate report filename
         purl_name = package_info.get("name")
         purl_version = package_info.get("version")
-        os_type = "deb" if self.os_type == "apt" else "rpm" if self.os_type == "yum" else self.os_type
+        pkg_type = "deb" if self.os_type == "apt" else "rpm" if self.os_type == "yum" else self.os_type
+        os_type = self.detect_os
         date_str = datetime.now().strftime("%Y%m%d")
         report_filename = f"ossa-{date_str}-{hash(package) % 10000}-{purl_name}.json"
         report_path = os.path.join(self.output_dir, report_filename)
@@ -99,8 +101,8 @@ class Scanner:
             "last_updated": datetime.now().isoformat(),
             "approvals": [{"consumption": True, "externalization": True}],
             "description": package_info.get("summary", []),
-            "purls": [f"pkg:{os_type}/{purl_name}@{purl_version}"],
-            "regex": [f"^pkg:{os_type}/{purl_name}.*"],
+            "purls": [f"pkg:{pkg_type}/{os_type}/{purl_name}@{purl_version}"],
+            "regex": [f"^pkg:{pkg_type}/{os_type}/{purl_name}.*"],
             "affected_versions": affected_versions,
             "artifacts": artifacts,
             "licenses": package_info.get("licenses", []),
