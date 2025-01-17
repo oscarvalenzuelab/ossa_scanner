@@ -56,7 +56,7 @@ class Scanner:
         # Generate report filename
         purl_name = package_info.get("name")
         purl_version = package_info.get("version")
-        pkg_type = "deb" if self.os_type == "apt" else "rpm" if self.os_type == "yum" else self.os_type
+        pkg_type = "deb" if self.pm_type == "apt" else "rpm" if self.pm_type == "yum" else self.pm_type
         os_type =  self.os_type
         date_str = datetime.now().strftime("%Y%m%d")
         report_filename = f"ossa-{date_str}-{hash(package) % 10000}-{purl_name}.json"
