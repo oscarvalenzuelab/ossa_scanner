@@ -152,7 +152,7 @@ def extract_spdx_ids(license_string):
     unique_spdx_ids = sorted(set(cleaned_ids))
     return ", ".join(unique_spdx_ids) if unique_spdx_ids else "No valid SPDX licenses found"
 
-def license_classification(licenses):
+def license_classificaton(licenses):
     license_categories = {
         "copyleft": ["GPL", "AGPL"],
         "weak_copyleft": ["LGPL", "MPL", "EPL", "CDDL"],
