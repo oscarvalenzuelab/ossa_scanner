@@ -93,8 +93,8 @@ def parse_brew_info(output):
             info["references"] = line.strip()
         elif line.startswith("License:"):  # The license information
             info["licenses"] = line.split(":", 1)[1].strip()
+            info["licenses"] = extract_spdx_ids(info["licenses"])
     info["severity"], info["rason"] = license_classificaton(info["licenses"])
-
     return info
 
 def parse_yum_info(output):
@@ -109,6 +109,7 @@ def parse_yum_info(output):
     for line in lines:
         if line.startswith("License"):
             info["licenses"] = line.split(":", 1)[1].strip()
+            info["licenses"] = extract_spdx_ids(info["licenses"])
             info["severity"], info["rason"] = license_classificaton(info["licenses"])
         elif line.startswith("URL"):
             info["references"] = line.split(":", 1)[1].strip()
@@ -132,6 +133,7 @@ def parse_apt_info(output):
             info["website"] = line.split(":", 1)[1].strip()
         elif "Copyright" in line:
             info["references"] = line.strip()
+        info["licenses"] = extract_spdx_ids(info["licenses"])
         severity = license_classificaton(info["licenses"])
 
     # Ensure all keys are present even if data is missing
@@ -141,6 +143,14 @@ def parse_apt_info(output):
         "references": info.get("references", "NOASSERTION"),
         "severity": severity,
     }
+
+def extract_spdx_ids(license_string):
+    if not license_string.strip():
+        return "No valid SPDX licenses found"
+    raw_ids = re.split(r'(?i)\sAND\s|\sOR\s|\(|\)', license_string)
+    cleaned_ids = [spdx.strip() for spdx in raw_ids if spdx.strip()]
+    unique_spdx_ids = sorted(set(cleaned_ids))
+    return ", ".join(unique_spdx_ids) if unique_spdx_ids else "No valid SPDX licenses found"
 
 def license_classificaton(licenses):
     license_categories = {
