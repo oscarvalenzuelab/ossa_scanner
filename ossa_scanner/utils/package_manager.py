@@ -152,19 +152,29 @@ def extract_spdx_ids(license_string):
     unique_spdx_ids = sorted(set(cleaned_ids))
     return ", ".join(unique_spdx_ids) if unique_spdx_ids else "No valid SPDX licenses found"
 
-def license_classificaton(licenses):
+def license_classification(licenses):
     license_categories = {
         "copyleft": ["GPL", "AGPL"],
         "weak_copyleft": ["LGPL", "MPL", "EPL", "CDDL"],
         "permissive": ["MIT", "BSD", "Apache"]
     }
-    severity = "Informational"
-    reason = "PURL identification for OSSBOMER"
-    for license in licenses:
-        if any(license.lower().startswith(c.upper()) for c in license_categories["copyleft"]):
-            severity = "High"
-            reason = "This package contains copyleft licenses, which impose strong obligations."
-        elif any(license.startswith(c.upper()) for c in license_categories["weak_copyleft"]):
-            severity = "Medium"
-            reason = "This package contains weak copyleft licenses, which impose moderate obligations."
-    return severity, reason
+    # Priority levels for each category
+    priority = {"copyleft": 1, "weak_copyleft": 2, "permissive": 3}
+    severity_map = {
+        "copyleft": ("High", "This package contains copyleft licenses, which impose strong obligations."),
+        "weak_copyleft": ("Medium", "This package contains weak copyleft licenses, which impose moderate obligations."),
+        "permissive": ("Informational", "This package contains permissive licenses, which impose minimal obligations."),
+    }
+    # Split multiple licenses and normalize them
+    license_list = [l.strip() for l in licenses.split(",")]
+    current_priority = float("inf")
+    selected_severity = "Informational"
+    selected_reason = "PURL identification for OSSBOMER"
+    for license in license_list:
+        for category, patterns in license_categories.items():
+            if any(license.upper().startswith(pattern.upper()) for pattern in patterns):
+                if priority[category] < current_priority:
+                    current_priority = priority[category]
+                    selected_severity, selected_reason = severity_map[category]
+    
+    return selected_severity, selected_reason
