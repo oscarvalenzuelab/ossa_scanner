@@ -10,7 +10,7 @@ def detect_pm():
     dist = distro.id()
     if 'ubuntu' in dist or 'debian' in dist:
         return 'apt'
-    elif 'redhat' in dist or 'centos' in dist or 'almalinux' in dist:
+    elif 'redhat' in dist or 'centos' in dist or 'almalinux' in dist or 'amzn' in dist:
         return 'yum'
     elif 'darwin' in dist:
         return 'brew'
