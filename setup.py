@@ -20,7 +20,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup(
     name="ossa_scanner",
     version=get_version(),
-    description="A Python library for scanning Linux packages, managing metadata, and generating SWHIDs.",
+    description="Open Source Software Advisory generator for Core and Base Linux Packages.",
     long_description=long_description,
     long_description_content_type='text/markdown',
     author="Oscar Valenzuela",
@@ -52,5 +52,5 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Operating System :: POSIX :: Linux",
     ],
-    keywords="linux packages SWHID open-source compliance",
+    keywords="linux packages SWHID open-source compliance ossa advisory",
 )
