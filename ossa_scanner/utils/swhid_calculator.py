@@ -14,6 +14,7 @@ def calculate_swhid(directory_path, file_path):
             for line in result.stdout.strip().split("\n"):
                 if line.startswith("swh:1:dir:"):
                     swhid = line.split("\t")[0]
+                    cleanup_extracted_files(directory_path)
                     return swhid
         else:
             print(f"Failed to compute folder SWHID: {result.stderr}")

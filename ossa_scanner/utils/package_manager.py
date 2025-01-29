@@ -26,7 +26,7 @@ def list_packages(package_manager):
 
     packages = result.stdout.splitlines()
     extracted_packages = []
-    max_packages = 50000
+    max_packages = 50
     k_packages = 0
     for line in packages:
         if not line.strip() or line.startswith("==>"):
