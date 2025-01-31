@@ -59,7 +59,7 @@ class Scanner:
         pkg_type = "deb" if self.pm_type == "apt" else "rpm" if self.pm_type == "yum" else self.pm_type
         os_type =  self.os_type
         date_str = datetime.now().strftime("%Y%m%d")
-        report_filename = f"ossa-{date_str}-{hash(package) % 10000}-{purl_name}.json"
+        report_filename = f"ossa-{date_str}-{hash(purl_name) % 10000}-{purl_name}.json"
         report_path = os.path.join(self.output_dir, report_filename)
 
         if package_info.get("version") != "*":

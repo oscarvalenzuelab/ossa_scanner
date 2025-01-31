@@ -25,18 +25,26 @@ def list_packages(package_manager):
         raise ValueError("ER1: Unsupported package manager for search")
 
     packages = result.stdout.splitlines()
-    extracted_packages = []
+    extracted_packages = set()
     max_packages = 500000
     k_packages = 0
+
     for line in packages:
         if not line.strip() or line.startswith("==>"):
             continue
-        extracted_packages.append(line.split()[0])
+        package_name = line.split()[0]
+        if package_name not in extracted_packages:
+            extracted_packages.add(package_name)
+            k_packages += 1
         if k_packages >= max_packages:
             break
-        k_packages += 1
 
-    return extracted_packages
+    package_list = sorted(list(extracted_packages))
+
+    print(f"Total unique packages: {len(package_list)}")
+    # for package in package_list:
+        # print(package)
+    return package_list
 
 
 def get_package_info(package_manager, package_name):
