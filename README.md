@@ -20,3 +20,5 @@ pip install --upgrade ossa_scanner
 ```
 
 ### License
+
+This project is licensed under MIT.
