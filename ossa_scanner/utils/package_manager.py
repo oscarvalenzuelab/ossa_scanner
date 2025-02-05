@@ -42,8 +42,6 @@ def list_packages(package_manager):
     package_list = sorted(list(extracted_packages))
 
     print(f"Total unique packages: {len(package_list)}")
-    # for package in package_list:
-        # print(package)
     return package_list
 
 
