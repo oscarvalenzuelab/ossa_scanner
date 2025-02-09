@@ -178,13 +178,14 @@ def apt_get_license_from_source(package_name, output_dir):
                 shutil.rmtree(path, ignore_errors=True)
         if not package_dir:
             return "NOASSERTION"
-        copyright_file = os.path.join(package_dir, "debian", "copyright")
-        licenses = []
-        if os.path.exists(copyright_file):
-            with open(copyright_file, "r", encoding="utf-8") as f:
-                for line in f:
-                    if re.search(r"(?i)license:", line):
-                        licenses.append(line.split(":", 1)[1].strip())
+        else:
+            copyright_file = os.path.join(package_dir, "debian", "copyright")
+            licenses = []
+            if os.path.exists(copyright_file):
+                with open(copyright_file, "r", encoding="utf-8") as f:
+                    for line in f:
+                        if re.search(r"(?i)license:", line):
+                            licenses.append(line.split(":", 1)[1].strip())
         shutil.rmtree(src_output_dir, ignore_errors=True)
         return ", ".join(set(licenses)) if licenses else "NOASSERTION"
     except subprocess.CalledProcessError as e:
