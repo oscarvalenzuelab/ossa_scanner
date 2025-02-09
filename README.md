@@ -1,11 +1,14 @@
-# ossa_scanner
-Open Source Advisory Scanner (Generator)
+# Open Source Advisory Scanner (Generator)
+OSSA-Scanner produces OSSA Advisory files per each package available (installed or not) in any Linux OS that uses RPM or Deb packages.
 
-## Centos/AL/AlmaLinux
+## Installation
+
+### Centos/AL/AlmaLinux
+
+Installing dependencies, including Software Heritage Scanner for SWHIDs and SSDEEP for FuzzyHashing:
 
 ```
-$ yum -y update
-$ yum -y groupinstall "Development Tools"
+$ yum -y update && yum -y groupinstall "Development Tools"
 $ yum -y install python-pip python3-devel
 $ pip3 install swh-scanner
 $ BUILD_LIB=1 pip install ssdeep
@@ -27,5 +30,13 @@ $ pip3 install ossa-scanner --break-system-packages
 ```
 > nohup ossa_scanner &
 ```
-> pip install --upgrade ossa_scanner
-cp -nf /home/ec2-user/* /home/ec2-user/OpenSourceAdvisoryDatabase/advisories/ && cd /home/ec2-user/OpenSourceAdvisoryDatabase/advisories/ && git add * && git commit -am 'Importing AmazonLinux OSSA' && git push
+
+To upgrade, just execute install with --upgrade
+```
+pip install --upgrade ossa_scanner
+```
+
+### License
+
+This project is licensed under MIT.
+>>>>>>> refs/remotes/origin/main
