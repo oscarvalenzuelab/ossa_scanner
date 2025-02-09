@@ -28,7 +28,7 @@ def list_packages(package_manager):
 
     packages = result.stdout.splitlines()
     extracted_packages = set()
-    max_packages = 50000
+    max_packages = 100000
     k_packages = 0
 
     for line in packages:
@@ -41,7 +41,6 @@ def list_packages(package_manager):
         if k_packages >= max_packages:
             break
     package_list = sorted(list(extracted_packages))
-
     print(f"Total unique packages: {len(package_list)}")
     return package_list
 
