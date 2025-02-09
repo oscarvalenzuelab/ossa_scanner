@@ -26,7 +26,7 @@ $ pip3 install ossa-scanner --break-system-packages
 ```
 
 
-### *** Running in background ***
+###  Running in background
 ```
 > nohup ossa_scanner &
 ```
@@ -39,4 +39,3 @@ pip install --upgrade ossa_scanner
 ### License
 
 This project is licensed under MIT.
->>>>>>> refs/remotes/origin/main
