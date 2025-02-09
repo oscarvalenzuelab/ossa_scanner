@@ -28,12 +28,12 @@ $ pip3 install ossa-scanner --break-system-packages
 
 ###  Running in background
 ```
-> nohup ossa_scanner &
+$ nohup ossa_scanner &
 ```
 
 To upgrade, just execute install with --upgrade
 ```
-pip install --upgrade ossa_scanner
+$ pip install --upgrade ossa_scanner
 ```
 
 ### License
