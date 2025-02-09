@@ -25,7 +25,6 @@ def download_source(package_manager, package_name, output_dir):
             cmd = ['apt-get', 'source', package_name]
             subprocess.run(cmd, check=True, cwd=src_output_dir, capture_output=True, text=True)
             tarballs = [os.path.join(src_output_dir, f) for f in os.listdir(src_output_dir) if f.endswith((".tar.gz", ".tar.bz2", ".tar.xz", ".tgz"))]
-            print('tarballs:', tarballs)
             return tarballs
         elif package_manager in ['yum', 'dnf']:
             p_hash = hash(package_name) % 10000
