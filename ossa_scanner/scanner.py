@@ -25,7 +25,7 @@ class Scanner:
     def process_package(self, package):
         try:
             print(f"Processing package: {package}")
-            package_info = get_package_info(self.pm_type, package)
+            package_info = get_package_info(self.pm_type, package, self.temp_dir)
             source_files = download_source(self.pm_type, package, self.temp_dir)
             self.save_package_report(package, package_info, source_files)
         except Exception as e:

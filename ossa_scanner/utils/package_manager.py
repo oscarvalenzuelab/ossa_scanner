@@ -1,6 +1,8 @@
 import subprocess
 import re
-
+import os
+import shutil
+import glob
 
 def list_packages(package_manager):
     if package_manager == 'apt':
@@ -26,7 +28,7 @@ def list_packages(package_manager):
 
     packages = result.stdout.splitlines()
     extracted_packages = set()
-    max_packages = 500000
+    max_packages = 50000
     k_packages = 0
 
     for line in packages:
@@ -38,14 +40,13 @@ def list_packages(package_manager):
             k_packages += 1
         if k_packages >= max_packages:
             break
-
     package_list = sorted(list(extracted_packages))
 
     print(f"Total unique packages: {len(package_list)}")
     return package_list
 
 
-def get_package_info(package_manager, package_name):
+def get_package_info(package_manager, package_name, output_dir):
     if package_manager == 'apt':
         cmd = ['apt-cache', 'show', package_name]
     elif package_manager in ['yum', 'dnf']:
@@ -58,12 +59,13 @@ def get_package_info(package_manager, package_name):
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
         output = result.stdout
-        if package_manager == 'brew':
-            return parse_brew_info(output)
-        elif package_manager in ['yum', 'dnf']:
-            return parse_yum_info(output)
-        elif package_manager == 'apt':
-            return parse_apt_info(output)
+        if output:
+            if package_manager == 'brew':
+                return parse_brew_info(output)
+            elif package_manager in ['yum', 'dnf']:
+                return parse_yum_info(output)
+            elif package_manager == 'apt':
+                return parse_apt_info(output, package_name, output_dir)
     except subprocess.CalledProcessError as e:
         print(f"Command failed: {e}")
         return None
@@ -127,28 +129,70 @@ def parse_yum_info(output):
             info["summary"] = line.split(":", 1)[1].strip()
     return info
 
-def parse_apt_info(output):
-    """Parses apt-cache show output."""
+def parse_apt_info(output, package_name, output_dir):
     info = {}
-    lines = output.splitlines()
+    info["name"] = "NOASSERTION"
+    info["version"] = "NOASSERTION"
 
+    lines = output.splitlines()
     for line in lines:
-        if line.startswith("License:") or "License" in line:
-            info["licenses"] = line.split(":", 1)[1].strip()
-        elif line.startswith("Homepage:"):
+        if line.startswith("Homepage:"):
             info["website"] = line.split(":", 1)[1].strip()
         elif "Copyright" in line:
             info["references"] = line.strip()
+        elif line.startswith("License:"):
+            info["licenses"] = line.split(":", 1)[1].strip()
+        elif line.startswith("Package:"):
+            info["name"] = line.split(":", 1)[1].strip()
+        elif line.startswith("Version:"):
+            info["version"] = line.split(":", 1)[1].strip()
+
+    if "licenses" not in info:
+        info["licenses"] = apt_get_license_from_source(package_name, output_dir)
+    if "licenses" in info:
         info["licenses"] = extract_spdx_ids(info["licenses"])
-        severity = license_classificaton(info["licenses"])
+        info["severity"] = license_classificaton(info["licenses"])
 
     # Ensure all keys are present even if data is missing
     return {
+        "name": info.get("name", "NOASSERTION"),
+        "version": info.get("version", "NOASSERTION"),
         "licenses": info.get("licenses", "NOASSERTION"),
         "copyright": info.get("copyright", "NOASSERTION"),
-        "references": info.get("references", "NOASSERTION"),
-        "severity": severity,
+        "references": info.get("website", "NOASSERTION"),
+        "severity": info.get("severity", "NOASSERTION"),
     }
+
+def apt_get_license_from_source(package_name, output_dir):
+    try:
+        p_hash = hash(package_name) % 10000
+        src_output_dir = os.path.join(output_dir, str(p_hash))
+        os.makedirs(src_output_dir, exist_ok=True)
+        cmd = ['apt-get', 'source', package_name]
+        subprocess.run(cmd, check=True, cwd=src_output_dir, capture_output=True, text=True)
+        for item in os.listdir(src_output_dir):
+            path = os.path.join(src_output_dir, item)
+            if item.startswith(package_name) and os.path.isdir(path):
+                package_dir = path
+            elif item.startswith(package_name):
+                shutil.rmtree(path, ignore_errors=True)
+        if not package_dir:
+            return "NOASSERTION"
+        copyright_file = os.path.join(package_dir, "debian", "copyright")
+        licenses = []
+        if os.path.exists(copyright_file):
+            with open(copyright_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    if re.search(r"(?i)license:", line):
+                        licenses.append(line.split(":", 1)[1].strip())
+        shutil.rmtree(src_output_dir, ignore_errors=True)
+        return ", ".join(set(licenses)) if licenses else "NOASSERTION"
+    except subprocess.CalledProcessError as e:
+        print(f"Error fetching source package: {e}")
+        return "NOASSERTION"
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        return "NOASSERTION"
 
 def extract_spdx_ids(license_string):
     if not license_string.strip():

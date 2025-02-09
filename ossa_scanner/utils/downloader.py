@@ -19,8 +19,14 @@ def cleanup_extracted_files(folder_path):
 def download_source(package_manager, package_name, output_dir):
     try:
         if package_manager == 'apt':
-            cmd = ['apt-get', 'source', package_name, '-d', output_dir]
-            subprocess.run(cmd, check=True)
+            p_hash = hash(package_name) % 10000
+            src_output_dir = os.path.join(output_dir, str(p_hash))
+            os.makedirs(src_output_dir, exist_ok=True)
+            cmd = ['apt-get', 'source', package_name]
+            subprocess.run(cmd, check=True, cwd=src_output_dir, capture_output=True, text=True)
+            tarballs = [os.path.join(src_output_dir, f) for f in os.listdir(src_output_dir) if f.endswith((".tar.gz", ".tar.bz2", ".tar.xz", ".tgz"))]
+            print('tarballs:', tarballs)
+            return tarballs
         elif package_manager in ['yum', 'dnf']:
             p_hash = hash(package_name) % 10000
             output_dir = os.path.join(output_dir, str(p_hash))
